@@ -1,0 +1,25 @@
+{
+  "name": "easygen-fullstack-task",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/espython/fullstack-test-project.git"
+  },
+  "author": "Eslam Mahmoud",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/espython/fullstack-test-project/issues"
+  },
+  "homepage": "https://github.com/espython/fullstack-test-project#readme",
+  "devDependencies": {
+    "turbo": "^2.2.3"
+  },
+  "workspaces": [
+    "apps/*"
+  ]
+}
