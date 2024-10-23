@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { LoggerService } from './logger/logger.service';
 import { LoggerModule } from './logger/logger.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { LoggerModule } from './logger/logger.module';
     }),
     LoggerModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, LoggerService],

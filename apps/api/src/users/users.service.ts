@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { IUser, User } from './user.model';
 import { Model } from 'mongoose';
@@ -12,7 +16,7 @@ export class UsersService {
     private readonly logger: LoggerService,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<IUser> {
+  async create(createUserDto: CreateUserDto): Promise<IUser> {
     try {
       const createdUser = new this.userModel(createUserDto);
       return await createdUser.save();
@@ -20,5 +24,17 @@ export class UsersService {
       this.logger.error(`Failed to create user: ${error.message}`, error.stack);
       throw new InternalServerErrorException('Failed to create user');
     }
+  }
+
+  async findByEmail(email: string) {
+    const user = await this.userModel.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (!user) {
+      throw new ConflictException('User not found');
+    }
+    return user;
   }
 }

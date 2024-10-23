@@ -16,3 +16,11 @@ export class CreateUserDto {
     Object.assign(this, data);
   }
 }
+
+export class LoginUserDto {
+  @IsEmail()
+  public email!: string;
+
+  @IsString()
+  public password!: string;
+}
