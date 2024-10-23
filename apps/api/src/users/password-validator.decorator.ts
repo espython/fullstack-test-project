@@ -8,7 +8,7 @@ import {
 @ValidatorConstraint({ async: false })
 export class IsPasswordValidConstraint implements ValidatorConstraintInterface {
   validate(password: string): boolean {
-    const hasMinimumLength = password.length >= 8;
+    const hasMinimumLength = password?.length >= 8;
     const hasLetter = /[a-zA-Z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialCharacter = /[!@#$%^&*(),.?":{}|<>]/.test(password);

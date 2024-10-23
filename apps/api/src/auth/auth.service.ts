@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from 'src/users/user.dto';
+import { excludeFields } from 'src/utils/excludefields';
 
 @Injectable()
 export class AuthService {
@@ -24,25 +25,30 @@ export class AuthService {
     return result;
   }
 
-  async login(user: LoginUserDto | any, res: Response | any) {
+  async login(userDto: LoginUserDto | any, res: Response | any) {
     const payload = {
-      email: user.email,
+      email: userDto.email,
       sub: {
-        name: user.name,
+        name: userDto.name,
       },
     };
-
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        expiresIn: '2h',
+        secret: process.env.JWT_SECRET_KEY,
+      }),
+      await this.jwtService.signAsync(payload, {
+        expiresIn: '7d',
+        secret: process.env.JWT_REFRESH_TOKEN_KEY,
+      }),
+    ]);
+    console.log({ expire: process.env.JWT_REFRESH_TOKEN_KEY });
+    const userWithoutPassword = excludeFields(userDto, ['password']);
     return res.status(200).json({
-      user,
+      user: { email: userWithoutPassword.username },
       backendTokens: {
-        accessToken: await this.jwtService.signAsync(payload, {
-          expiresIn: '2h',
-          secret: process.env.JWT_SECRET_KEY,
-        }),
-        refreshToken: await this.jwtService.signAsync(payload, {
-          expiresIn: '7d',
-          secret: process.env.JWT_REFRESH_TOKEN_KEY,
-        }),
+        accessToken,
+        refreshToken,
         expiresIn: new Date().setTime(
           new Date().getTime() + parseInt(process.env.TOKEN_EXPIRE_TIME),
         ),
