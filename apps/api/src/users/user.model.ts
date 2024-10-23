@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export interface IUser extends Document {
   name: string;
@@ -8,21 +8,16 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-class UserSchema extends Schema {
-  constructor() {
-    super(
-      {
-        name: { type: String, required: true },
-        email: { type: String, required: true },
-        password: { type: String, required: true },
-      },
-      {
-        timestamps: true,
-      },
-    );
-  }
+@Schema()
+export class User {
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  email: string;
+
+  @Prop({ required: true })
+  password: string;
 }
 
-const User = model<IUser>('User;', new UserSchema());
-
-export default User;
+export default SchemaFactory.createForClass(User);

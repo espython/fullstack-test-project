@@ -1,26 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
-export class LoggerService {
-  constructor(private readonly logger: Logger) {}
-
-  error(message: any, context: string) {
-    this.logger.error(message, context);
+export class LoggerService extends Logger {
+  log(message: string) {
+    super.log(message);
   }
 
-  warn(message: any, context: string) {
-    this.logger.warn(message, context);
+  error(message: string, trace: string) {
+    super.error(message, trace);
   }
 
-  log(message: any, context: string) {
-    this.logger.log(message, context);
+  warn(message: string) {
+    super.warn(message);
   }
 
-  debug(message: any, context: string) {
-    this.logger.debug(message, context);
+  debug(message: string) {
+    super.debug(message);
   }
 
-  verbose(message: any, context: string) {
-    this.logger.verbose(message, context);
+  verbose(message: string) {
+    super.verbose(message);
   }
 }

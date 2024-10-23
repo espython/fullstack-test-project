@@ -1,6 +1,7 @@
 import { IsString, IsEmail } from 'class-validator';
+import { IsPasswordValid } from './password-validator.decorator';
 
-export class CreatePetDto {
+export class CreateUserDto {
   @IsString()
   public name!: string;
 
@@ -8,9 +9,10 @@ export class CreatePetDto {
   public email!: string;
 
   @IsString()
+  @IsPasswordValid({ message: 'Password is too weak' })
   public password!: string;
 
-  constructor(data: CreatePetDto) {
+  constructor(data: CreateUserDto) {
     Object.assign(this, data);
   }
 }
