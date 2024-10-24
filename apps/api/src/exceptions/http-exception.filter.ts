@@ -21,7 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const message =
+    const message: any =
       exception instanceof HttpException ? exception.getResponse() : exception;
 
     this.logger.error(
@@ -32,7 +32,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      message: message,
+      message: message.message,
     });
   }
 }

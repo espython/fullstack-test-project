@@ -8,13 +8,13 @@ import SignUpPage from "./pages/SignUpPage";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<SignUpPage />} />
           <Route
-            path="/home"
+            path="/*"
             element={
               <PrivateRoute>
                 <Routes>
@@ -24,8 +24,8 @@ function App() {
             }
           />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

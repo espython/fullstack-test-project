@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { register as registerApi} from "../services/api";
+import { register as registerApi } from "../services/api";
 import { AxiosError } from "axios";
 
-import { FaCircleUser, FaLock ,FaEnvelope} from "react-icons/fa6";
-
+import { FaCircleUser, FaLock, FaEnvelope, FaPaperPlane } from "react-icons/fa6";
+import Alert from "./Alert";
+import { useAuth } from "../context/AuthContext";
 
 function SignUp() {
   const [state, setState] = useState({
@@ -14,6 +15,8 @@ function SignUp() {
     error: "",
   });
   const navigate = useNavigate();
+  const {register} = useAuth();
+const { name, email, password, error } = state;
 
   const validatePassword = (password: string) => {
     const passwordRegex =
@@ -26,6 +29,10 @@ function SignUp() {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setState((prevState) => ({
+      ...prevState,
+      error: "",
+    }))
     if (!validatePassword(state.password)) {
       setState((prevState) => ({
         ...prevState,
@@ -36,69 +43,74 @@ function SignUp() {
     }
 
     try {
-      await registerApi({
-        name: state.name,
-        email: state.email,
-        password: state.password,
-      });
-      navigate("/login");
-    } catch (error:unknown) {
-			if (error instanceof AxiosError) {
-				setState(() => ({
-					...state,
-					error: error.response?.data?.message || error.message,
-				}));
-			} else {
-				setState(() => ({
-					...state,
-					error: 'An unknown error occurred',
-				}));
-			}
+       await register(
+         state.name,
+        state.email,
+         state.password,
+      );
+      
+      navigate("/");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        setState(() => ({
+          ...state,
+          error: error.response?.data?.message || error.message,
+        }));
+      } else {
+        setState(() => ({
+          ...state,
+          error: "An unknown error occurred",
+        }));
+      }
     }
   };
   return (
-    <div  className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5">
       <div className="flex justify-center">
         <h2 className="text-3xl font-bold text-pastelBlue">Register</h2>
       </div>
+      {error && <Alert text={error} />}
       <form
-        action=""
         className="w-full flex flex-col gap-3 sm:gap-4"
         onSubmit={handleSubmit}
       >
-        <div className="join bg-primary shadow-2xl p-2 flex items-center">
+        <div className="join bg-primary shadow-2xl py-2 flex items-center">
           <label className="px-3 py-1 text-lg join-item text-pastelBlue border-r border-r-slate-400">
-            <FaCircleUser/>
+            <FaCircleUser />
           </label>
           <input
             type="text"
             className="px-3 py-2 w-full text-sm join-item outline-none bg-transparent"
             placeholder="Name"
+            name="name"
             onChange={handleChange}
           />
         </div>
-        <div className="join bg-primary shadow-2xl p-2 flex items-center">
+        <div className="join bg-primary shadow-2xl py-2 flex items-center">
           <label className="px-3 py-1 text-lg join-item text-pastelBlue border-r border-r-slate-400">
-					<FaEnvelope />
+            <FaEnvelope />
           </label>
           <input
             type="email"
             className="px-3 py-2 w-full text-sm join-item outline-none bg-transparent"
             placeholder="Email"
+            name="email"
+            onChange={handleChange}
           />
         </div>
-        <div className="join bg-primary shadow-2xl p-2 flex items-center">
+        <div className="join bg-primary shadow-2xl py-2 flex items-center">
           <label className="px-3 py-1 text-lg join-item text-pastelBlue border-r border-r-slate-400">
-            <FaLock/>
+            <FaLock />
           </label>
           <input
             type="password"
             className="px-3 py-2 w-full text-sm join-item outline-none bg-transparent"
             placeholder="Enter Password"
+            name="password"
             onChange={handleChange}
           />
         </div>
-        <div className="flex flex-row gap-3 items-center justify-between py-8">
+        <div className="flex flex-row gap-3 items-center justify-between py-2">
           <div>
             <p className="sm:text-sm">
               By creating an account, you agree and accept our{" "}
@@ -113,8 +125,14 @@ function SignUp() {
             </p>
           </div>
         </div>
-        <button className="fill-btn btn-large">
-          Sign Up <i className="fa-solid fa-paper-plane"></i>
+        <div className="flex items-center ">
+          <p>Already have an account?</p>
+          <a className="sm:text-sm hover:text-acent ml-2" href="/login">
+            Login
+          </a>
+        </div>
+        <button className="flex items-center justify-center fill-btn btn-large disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed" type="submit" disabled={!name || !email || !password}>
+          Sign Up <FaPaperPlane className="ml-2"/>
         </button>
       </form>
     </div>

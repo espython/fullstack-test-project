@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { LoggerService } from './logger/logger.service';
 import { HttpExceptionFilter } from './exceptions/http-exception.filter';
@@ -11,6 +12,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1', { exclude: ['healthcheck'] });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter(logger));
+  app.use(cookieParser());
   await app.listen(3000);
 }
 bootstrap();

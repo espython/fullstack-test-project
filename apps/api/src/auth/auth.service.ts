@@ -6,6 +6,7 @@ import { Response } from 'express';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from 'src/users/user.dto';
 import { excludeFields } from 'src/utils/excludefields';
+import { User } from 'src/users/user.model';
 
 @Injectable()
 export class AuthService {
@@ -15,21 +16,21 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    const user = await this.userService.findByEmail(email);
+    const user = (await this.userService.findByEmail(email)) as any;
     if (!user) throw new UnauthorizedException();
     const compareHashedResult = await compare(password, user.password);
     if (!compareHashedResult) throw new UnauthorizedException();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: hashed, ...result } = user;
+    const { password: hashed, ...result } = user._doc;
     return result;
   }
 
   async login(userDto: LoginUserDto | any, res: Response | any) {
     const payload = {
-      email: userDto.email,
+      email: userDto.user.email,
       sub: {
-        name: userDto.name,
+        name: userDto.user.name,
       },
     };
     const [accessToken, refreshToken] = await Promise.all([
@@ -42,18 +43,37 @@ export class AuthService {
         secret: process.env.JWT_REFRESH_TOKEN_KEY,
       }),
     ]);
-    console.log({ expire: process.env.JWT_REFRESH_TOKEN_KEY });
-    const userWithoutPassword = excludeFields(userDto, ['password']);
-    return res.status(200).json({
-      user: { email: userWithoutPassword.username },
-      backendTokens: {
-        accessToken,
-        refreshToken,
-        expiresIn: new Date().setTime(
-          new Date().getTime() + parseInt(process.env.TOKEN_EXPIRE_TIME),
-        ),
-      },
+
+    const userWithoutPassword = excludeFields(userDto.user, ['password']);
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
+    return res.status(200).json({
+      _id: userWithoutPassword._id,
+      name: userWithoutPassword.name,
+      email: userWithoutPassword.email,
+    });
+    // return res.status(200).json({
+    //   user: { email: userWithoutPassword.username },
+    //   backendTokens: {
+    //     accessToken,
+    //     refreshToken,
+    //     expiresIn: new Date().setTime(
+    //       new Date().getTime() + parseInt(process.env.TOKEN_EXPIRE_TIME),
+    //     ),
+    //   },
+    // });
   }
 
   async refreshToken(user: any) {
@@ -65,7 +85,7 @@ export class AuthService {
     return {
       accessToken: await this.jwtService.signAsync(payload, {
         expiresIn: '20s',
-        secret: process.env.JWT_SECRET_KET,
+        secret: process.env.JWT_SECRET_KEY,
       }),
       refreshToken: await this.jwtService.signAsync(payload, {
         expiresIn: '7d',
