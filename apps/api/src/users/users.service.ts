@@ -34,7 +34,7 @@ export class UsersService {
     return createdUser.save();
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string, message?: string) {
     const user = await this.userModel
       .findOne({
         email,
@@ -42,7 +42,7 @@ export class UsersService {
       .select('password _id name email');
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(message ? message : 'User not found');
     }
     return user;
   }

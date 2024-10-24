@@ -15,7 +15,10 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userService.findByEmail(
+      email,
+      `email or password is incorrect`,
+    );
     if (!user) throw new UnauthorizedException();
     const compareHashedResult = await compare(password, user.password);
     if (!compareHashedResult) throw new UnauthorizedException();
@@ -25,7 +28,7 @@ export class AuthService {
     return result;
   }
 
-  async login(userDto: LoginUserDto | any, res: Response | any) {
+  async login(userDto: LoginUserDto | any) {
     console.log({ userDto });
     const payload = {
       email: userDto.user._doc.email,
@@ -45,21 +48,11 @@ export class AuthService {
     ]);
 
     const userWithoutPassword = excludeFields(userDto.user._doc, ['password']);
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
-
-    return res.status(200).json(userWithoutPassword);
+    return {
+      user: userWithoutPassword,
+      accessToken,
+      refreshToken,
+    };
   }
 
   async refreshToken(user: any) {

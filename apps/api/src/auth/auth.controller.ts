@@ -59,7 +59,26 @@ export class AuthController {
   async login(@Request() req: ExpressReq | any, @Response() res: ExpressRes) {
     const { user, body } = req;
 
-    return this.authService.login({ user, body }, res);
+    const {
+      user: foundUser,
+      accessToken,
+      refreshToken,
+    } = await this.authService.login({ user, body });
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
+    return res.status(200).json(foundUser);
   }
 
   @UseGuards(RefreshJwtGuard)

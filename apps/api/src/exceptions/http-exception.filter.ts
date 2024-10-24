@@ -26,6 +26,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     this.logger.error(
       `HTTP Status: ${status} Error Message: ${JSON.stringify(message)}`,
+      status === 500 && (exception as Error).stack,
     );
 
     response.status(status).json({
