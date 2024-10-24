@@ -11,7 +11,7 @@ export type User = {
 export type AuthContextType = {
   user:User;
   login: (email: string, password: string) => Promise<User>;
-  logout: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
   register: (name :string,email: string, password: string) => Promise<User>;
 };
 const AuthContext = createContext<AuthContextType|null>(null);

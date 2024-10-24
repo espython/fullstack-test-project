@@ -39,7 +39,7 @@ export class UsersService {
       .findOne({
         email,
       })
-      .select('_id name email');
+      .select('password _id name email');
 
     if (!user) {
       throw new NotFoundException('User not found');

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { register as registerApi } from "../services/api";
 import { AxiosError } from "axios";
 
 import { FaCircleUser, FaLock, FaEnvelope, FaPaperPlane } from "react-icons/fa6";

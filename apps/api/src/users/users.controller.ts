@@ -5,7 +5,6 @@ import {
   Post,
   Response,
   Request,
-  NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { Response as ExpressRes, Request as ExpressReq } from 'express';
@@ -22,8 +21,8 @@ export class UsersController {
     const user = await this.userService.create(createUserDto);
     return { message: 'User registered successfully', user };
   }
-  @Get('me')
   @UseGuards(JwtGuard)
+  @Get('me')
   async getMe(@Request() req: ExpressReq | any, @Response() res: ExpressRes) {
     const { user } = req;
     console.log(user);

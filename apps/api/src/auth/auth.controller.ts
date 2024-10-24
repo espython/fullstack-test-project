@@ -27,7 +27,13 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() userDto: CreateUserDto, @Res() res: ExpressRes) {
-    const newUser = await this.userService.create(userDto);
+    const newUserDoc: any = await this.userService.create(userDto);
+    const newUser = {
+      _id: newUserDoc._doc._id,
+      name: newUserDoc._doc.name,
+      email: newUserDoc._doc.email,
+    };
+
     const { accessToken, refreshToken } =
       await this.authService.refreshToken(newUser);
     res.cookie('accessToken', accessToken, {
@@ -90,5 +96,10 @@ export class AuthController {
       });
     }
     res.json(foundUser);
+  }
+
+  @Post('logout')
+  async logOut(@Response() res: ExpressRes) {
+    return this.authService.logOut(res);
   }
 }

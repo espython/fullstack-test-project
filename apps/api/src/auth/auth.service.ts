@@ -6,7 +6,6 @@ import { Response } from 'express';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from 'src/users/user.dto';
 import { excludeFields } from 'src/utils/excludefields';
-import { User } from 'src/users/user.model';
 
 @Injectable()
 export class AuthService {
@@ -16,21 +15,22 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    const user = (await this.userService.findByEmail(email)) as any;
+    const user = await this.userService.findByEmail(email);
     if (!user) throw new UnauthorizedException();
     const compareHashedResult = await compare(password, user.password);
     if (!compareHashedResult) throw new UnauthorizedException();
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: hashed, ...result } = user._doc;
+    const { password: hashed, ...result } = user;
     return result;
   }
 
   async login(userDto: LoginUserDto | any, res: Response | any) {
+    console.log({ userDto });
     const payload = {
-      email: userDto.user.email,
+      email: userDto.user._doc.email,
       sub: {
-        name: userDto.user.name,
+        name: userDto.user._doc.name,
       },
     };
     const [accessToken, refreshToken] = await Promise.all([
@@ -44,7 +44,7 @@ export class AuthService {
       }),
     ]);
 
-    const userWithoutPassword = excludeFields(userDto.user, ['password']);
+    const userWithoutPassword = excludeFields(userDto.user._doc, ['password']);
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -59,21 +59,7 @@ export class AuthService {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    return res.status(200).json({
-      _id: userWithoutPassword._id,
-      name: userWithoutPassword.name,
-      email: userWithoutPassword.email,
-    });
-    // return res.status(200).json({
-    //   user: { email: userWithoutPassword.username },
-    //   backendTokens: {
-    //     accessToken,
-    //     refreshToken,
-    //     expiresIn: new Date().setTime(
-    //       new Date().getTime() + parseInt(process.env.TOKEN_EXPIRE_TIME),
-    //     ),
-    //   },
-    // });
+    return res.status(200).json(userWithoutPassword);
   }
 
   async refreshToken(user: any) {
@@ -95,5 +81,17 @@ export class AuthService {
         new Date().getTime() + parseInt(process.env.TOKEN_EXPIRE_TIME),
       ),
     };
+  }
+
+  async logOut(res: Response) {
+    res.cookie('accessToken', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+    res.cookie('refreshToken', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
   }
 }
