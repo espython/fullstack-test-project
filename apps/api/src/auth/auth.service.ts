@@ -29,7 +29,6 @@ export class AuthService {
   }
 
   async login(userDto: LoginUserDto | any) {
-    console.log({ userDto });
     const payload = {
       email: userDto.user._doc.email,
       sub: {

@@ -25,7 +25,6 @@ export class UsersController {
   @Get('me')
   async getMe(@Request() req: ExpressReq | any, @Response() res: ExpressRes) {
     const { user } = req;
-    console.log(user);
 
     const foundUser = await this.userService.findByEmail(user.email);
 

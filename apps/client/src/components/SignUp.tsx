@@ -9,7 +9,7 @@ import {
   FaPaperPlane,
 } from "react-icons/fa6";
 import Alert from "./Alert";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth.tsx";
 import MainBtn from "./MainBtn.tsx";
 
 function SignUp() {

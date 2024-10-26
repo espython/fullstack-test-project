@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import React, { useState } from "react";
 import { AxiosError } from "axios";
 import { FaCircleUser, FaLock, FaPaperPlane } from "react-icons/fa6";
 import Alert from "./Alert";
 import MainBtn from "./MainBtn.tsx";
+import { useAuth } from "../context/useAuth.tsx";
 
 function Login() {
   const [state, setState] = useState({

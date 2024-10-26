@@ -1,5 +1,5 @@
 import { FaSignOutAlt } from "react-icons/fa";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth.tsx";
 import MainBtn from "../components/MainBtn.tsx";
 
 function Home() {

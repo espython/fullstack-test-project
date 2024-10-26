@@ -24,12 +24,10 @@ export class UsersService {
       email: createUserDto.email,
     });
 
-    console.log('user', user);
     if (user) {
       throw new ConflictException('User already exists');
     }
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    createUserDto.password = hashedPassword;
+    createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
