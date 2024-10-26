@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import React, { useState } from "react";
 import { AxiosError } from "axios";
 import { FaCircleUser, FaLock, FaPaperPlane } from "react-icons/fa6";
 import Alert from "./Alert";
+import MainBtn from "./MainBtn.tsx";
 
 function Login() {
   const [state, setState] = useState({
@@ -12,7 +13,7 @@ function Login() {
     error: "",
   });
   const { email, password, error } = state;
-	console.log({email, password, error})
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setState({
       ...state,
@@ -46,30 +47,33 @@ function Login() {
       <div className="flex justify-center">
         <h2 className="text-3xl font-bold text-pastelBlue">Login</h2>
       </div>
-			{error && <Alert text={error} />}
-      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3 sm:gap-4">
+      {error && <Alert text={error} />}
+      <form
+        onSubmit={handleSubmit}
+        className="w-full flex flex-col gap-3 sm:gap-4"
+      >
         <div className="join bg-primary shadow-2xl p-2 flex items-center">
           <label className="px-3 py-1 text-lg join-item text-pastelBlue border-r border-r-slate-400">
-            <FaCircleUser/>
+            <FaCircleUser />
           </label>
           <input
             type="email"
             className="px-3 py-2 w-full text-sm join-item outline-none bg-transparent"
             placeholder="email"
-						name="email"
-						onChange={handleChange}
+            name="email"
+            onChange={handleChange}
           />
         </div>
         <div className="join bg-primary shadow-2xl p-2 flex items-center">
           <label className="px-3 py-1 text-lg join-item text-pastelBlue border-r border-r-slate-400">
-            <FaLock/>
+            <FaLock />
           </label>
           <input
             type="password"
             className="px-3 py-2 w-full text-sm join-item outline-none bg-transparent"
             placeholder="Enter Password"
-						name="password"
-						onChange={handleChange}
+            name="password"
+            onChange={handleChange}
           />
         </div>
         <div className=" py-4 flex flex-row gap-3 items-center justify-between">
@@ -87,11 +91,9 @@ function Login() {
             </a>
           </div>
         </div>
-        <button className="flex items-center justify-center fill-btn btn-large disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed" type="submit" disabled={!email || !password}>
-          
-            Login <FaPaperPlane className="ml-2"/>
-          
-        </button>
+        <MainBtn type="submit" disabled={!email || !password}>
+          Login <FaPaperPlane className="ml-2" />
+        </MainBtn>
       </form>
     </div>
   );

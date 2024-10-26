@@ -1,20 +1,24 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { getMe, login as loginApi, logout as logoutApi ,register as registerApi} from "../services/api";
+import React, { createContext, useState, useEffect } from "react";
+import {
+  getMe,
+  login as loginApi,
+  logout as logoutApi,
+  register as registerApi,
+} from "../services/api";
 import { useNavigate } from "react-router-dom";
 
-
 export type User = {
-	id: string;
-	email: string;
-	name: string;
-} | null
+  id: string;
+  email: string;
+  name: string;
+} | null;
 export type AuthContextType = {
-  user:User;
+  user: User;
   login: (email: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
-  register: (name :string,email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, password: string) => Promise<User>;
 };
-const AuthContext = createContext<AuthContextType|null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState(null);
@@ -29,9 +33,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const checkAuth = async () => {
     try {
       const response = await getMe();
-      
+
       setUser(response.data);
-      navigate('/')
+      navigate("/");
     } catch {
       setUser(null);
     } finally {
@@ -40,15 +44,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const login = async (email: string, password: string) => {
-    const response = await loginApi({ username:email, password });
-    console.log({response})
+    const response = await loginApi({ username: email, password });
+    console.log({ response });
     setUser(response.data);
     return response.data;
   };
 
-  const register = async (name :string,email: string, password: string) => {
-    const response = await registerApi({ name,email, password });
-    console.log({response})
+  const register = async (name: string, email: string, password: string) => {
+    const response = await registerApi({ name, email, password });
+    console.log({ response });
     setUser(response.data);
     return response.data;
   };
@@ -63,16 +67,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout,register }}>
+    <AuthContext.Provider value={{ user, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };

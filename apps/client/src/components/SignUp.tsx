@@ -2,9 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 
-import { FaCircleUser, FaLock, FaEnvelope, FaPaperPlane } from "react-icons/fa6";
+import {
+  FaCircleUser,
+  FaLock,
+  FaEnvelope,
+  FaPaperPlane,
+} from "react-icons/fa6";
 import Alert from "./Alert";
 import { useAuth } from "../context/AuthContext";
+import MainBtn from "./MainBtn.tsx";
 
 function SignUp() {
   const [state, setState] = useState({
@@ -14,8 +20,8 @@ function SignUp() {
     error: "",
   });
   const navigate = useNavigate();
-  const {register} = useAuth();
-const { name, email, password, error } = state;
+  const { register } = useAuth();
+  const { name, email, password, error } = state;
 
   const validatePassword = (password: string) => {
     const passwordRegex =
@@ -31,7 +37,7 @@ const { name, email, password, error } = state;
     setState((prevState) => ({
       ...prevState,
       error: "",
-    }))
+    }));
     if (!validatePassword(state.password)) {
       setState((prevState) => ({
         ...prevState,
@@ -42,12 +48,8 @@ const { name, email, password, error } = state;
     }
 
     try {
-       await register(
-         state.name,
-        state.email,
-         state.password,
-      );
-      
+      await register(state.name, state.email, state.password);
+
       navigate("/");
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -130,9 +132,9 @@ const { name, email, password, error } = state;
             Login
           </a>
         </div>
-        <button className="flex items-center justify-center fill-btn btn-large disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed" type="submit" disabled={!name || !email || !password}>
-          Sign Up <FaPaperPlane className="ml-2"/>
-        </button>
+        <MainBtn type="submit" disabled={!name || !email || !password}>
+          Sign Up <FaPaperPlane className="ml-2" />
+        </MainBtn>
       </form>
     </div>
   );
