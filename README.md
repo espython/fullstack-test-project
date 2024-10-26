@@ -52,6 +52,17 @@ npm install
   npm run start:debug
   ```
 
+## Environment Variables
+
+Create a `.env` file in the `apps/api` folder with the following environment variables:
+
+```env
+MONGODB_URI=<your-mongodb-connection-string>
+JWT_SECRET_KEY=<your-jwt-secret-key>
+JWT_REFRESH_TOKEN_KEY=<your-jwt-refresh-token-key>
+TOKEN_EXPIRE_TIME=<your-token-expire-time>
+```
+
 ## Workspace Configuration
 
 This project uses npm workspaces to manage multiple applications. All applications are located in the `apps/*` directory. Each application in the workspace can be developed and built independently while sharing dependencies.
